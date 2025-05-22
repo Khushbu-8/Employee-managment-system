@@ -18,7 +18,7 @@ const cors = require("cors");
 // Access controll
 
 const corsOptions = {
-  origin: ["https://employee-managment-system-nu-dun.vercel.app", "http://localhost:5173"], 
+  origin: ["https://employee-managment-system-6id7.vercel.app", "http://localhost:5173"], 
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };
