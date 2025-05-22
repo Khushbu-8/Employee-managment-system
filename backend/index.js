@@ -1,5 +1,5 @@
 const express = require("express");
-require("dotenv").config();
+require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 8000 ;
 
@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 const cors = require("cors");
 const corsOptions = {
-  origin: ["https://news-app-irqz.vercel.app","http://localhost:5173"],
+  origin: ["http://localhost:5173"],
   methods: ["GET", "POST", "PUT", "DELETE"], // Add methods as needed
   credentials: true, // If your frontend sends cookies
 };
