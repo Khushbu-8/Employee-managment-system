@@ -15,15 +15,17 @@ app.use(bodyParser.urlencoded({ extended: true })); // Change `true` or `false` 
 app.use(bodyParser.json());
 
 const cors = require("cors");
+// Access controll
+
 const corsOptions = {
-  origin: ["https://employee-managment-system-6id7.vercel.app","http://localhost:5173"],
-  methods: ["GET", "POST", "PUT", "DELETE"], // Add methods as needed
-  credentials: true, // If your frontend sends cookies
+  origin: ["https://employee-managment-system-nu-dun.vercel.app", "http://localhost:5173"], 
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
 };
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.send("Hello");
