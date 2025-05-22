@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 const cors = require("cors");
 const corsOptions = {
-  origin: ["http://localhost:5173"],
+  origin: ["employee-managment-system-6id7.vercel.app","http://localhost:5173"],
   methods: ["GET", "POST", "PUT", "DELETE"], // Add methods as needed
   credentials: true, // If your frontend sends cookies
 };
