@@ -9,14 +9,6 @@ import EditEmployee from "./pages/EditEmployee";
 import { useAuth } from "./context/AuthContext";
 import AdminProfile from "./pages/AdminProfile";
 
-const PrivateRoute = ({ children, role }) => {
-  const { user } = useAuth();
-  console.log(user,"uuuusss");
-  
-  if (!user) return <Navigate to="/login" />;
-  if (role && user.role !== role) return <Navigate to="/" />;
-  return children;
-};
 
 const AppRoutes = () => {
   const { user } = useAuth();

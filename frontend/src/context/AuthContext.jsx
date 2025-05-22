@@ -6,7 +6,6 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
-
   const login = (userData) => setUser(userData);
   console.log(user,"profile");
   
@@ -25,6 +24,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.clear(); // clear localStorage
       setUser(null);
       setToken(null);
+     
     } catch (err) {
       console.error("Logout failed:", err);
     }
