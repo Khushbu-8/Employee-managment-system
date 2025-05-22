@@ -68,10 +68,20 @@ const login = async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).send({ message: "Invalid credentials" });
     }
+    const Users = {
+       username: user.username,
+    email: user.email,
+    role: user.role
+    }
 
     // generate token
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ 
+      id: user._id,
+      username: user.username,
+    email: user.email,
+    role: user.role
+     }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
 
@@ -85,6 +95,7 @@ const login = async (req, res) => {
       status: true,
       message: "Login successful",
       token,
+      Users
     });
   } catch (error) {
     res.status(400).send({
@@ -93,7 +104,41 @@ const login = async (req, res) => {
     });
   }
 };
+const logout = (req, res) => {
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  return res.status(200).send({
+    status: true,
+    message: "User logged out successfully",
+  });
+};
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await UserModel.find({}, "name email role"); // return selected fields
+    res.status(200).send(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).send({ message: "Server error" });
+  }
+};
+const employeeProfile =  async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.user.id);
+    console.log(user,"users");
+    
+    res.send(user);
+  } catch (err) {
+    res.status(500).send({ message: 'Server error' });
+  }
+};
 module.exports = {
   SignUp,
   login,
+  logout,
+  getAllUsers,
+  employeeProfile
 };

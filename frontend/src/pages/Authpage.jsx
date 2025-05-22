@@ -16,18 +16,24 @@ const Authpage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
- 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      const res = await API.post("/auth/login", { email, password });
-      const { token } = res.data;
-      const userData = JSON.parse(atob(token.split(".")[1]));
+        const res = await API.post("/auth/login", { email, password });
+        const { token, Users } = res.data;
+        console.log(res.data,"login");
+        
+        const userData = JSON.parse(atob(token.split(".")[1]));
+        console.log(Users,"Users");  
+        console.log(userData,"Usersdata");  
       localStorage.setItem("token", token);
-      login(userData);
+      localStorage.setItem("user", JSON.stringify(Users));
+      // localStorage.setItem("user", );
+      login(Users);
    toast.success(res.data.message ||"Login successful!");
 
       // Navigate to the correct page based on role

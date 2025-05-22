@@ -2,21 +2,36 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../services/api";
 import SidebarLayout from "../components/SidebarLayout";
+import { useAuth } from "../context/AuthContext";
 
 const EditEmployee = () => {
+  const {token} = useAuth()
   const { id } = useParams();
-  console.log(id,"prams");
-  
-  const [formData, setFormData] = useState({ name: "", email: "", role: "employee" });
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    phone: "",
+    dateOfJoining: "",
+    role: "employee",
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await API.get(`/admin/employees/${id}`);
-        setFormData(res.data);
+        const res = await API.get(`/employee/getEmployeeById/${id}`);
+        console.log(res.data);
+        
+        setFormData({
+          name: res.data.employee.name || "",
+          email: res.data.employee.email || "",
+          phone: res.data.employee.phone || "",
+          dateOfJoining: res.data.employee.dateOfJoining?.split("T")[0] || ""
+        });
       } catch (err) {
         setError("Failed to load employee");
       }
@@ -26,15 +41,21 @@ const EditEmployee = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await API.put(`/admin/employees/${id}`, formData);
+      await API.put(`/employee/updateEmployee/${id}`, formData ,{
+         headers: { Authorization: `Bearer ${token}` }
+      });
       navigate("/admin/employees");
+
     } catch (err) {
       setError("Failed to update employee");
     } finally {
@@ -49,8 +70,8 @@ const EditEmployee = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
-            name="username"
-            placeholder="Name"
+            name="name"
+            placeholder="Full Name"
             value={formData.name}
             onChange={handleChange}
             required
@@ -65,19 +86,27 @@ const EditEmployee = () => {
             required
             className="w-full border p-2 rounded"
           />
-          <select
-            name="role"
-            value={formData.role}
+          <input
+            type="text"
+            name="phone"
+            placeholder="Phone Number"
+            value={formData.phone}
             onChange={handleChange}
+            required
             className="w-full border p-2 rounded"
-          >
-            <option value="employee">Employee</option>
-            <option value="admin">Admin</option>
-          </select>
+          />
+          <input
+            type="date"
+            name="dateOfJoining"
+            value={formData.dateOfJoining}
+            onChange={handleChange}
+            required
+            className="w-full border p-2 rounded"
+          />
           <button
             type="submit"
             disabled={loading}
-            className="bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded"
+            className="bg-purple-700 hover:bg-purple-600 text-white py-2 px-4 rounded"
           >
             {loading ? "Updating..." : "Update Employee"}
           </button>

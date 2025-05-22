@@ -9,6 +9,10 @@ const employeeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  phone: {
+    type: String,
+    required: true,
+  },
   dateOfJoining: {
     type: Date,
     required: true,

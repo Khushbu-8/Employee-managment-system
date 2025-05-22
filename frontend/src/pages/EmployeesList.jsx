@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import API from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
 import SidebarLayout from "../components/SidebarLayout";
+import { useAuth } from "../context/AuthContext";
 
 const EmployeesList = () => {
+  const {token} = useAuth();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,6 +13,8 @@ const EmployeesList = () => {
   const [dateFilter, setDateFilter] = useState("");
   const [sortKey, setSortKey] = useState("name"); // "name" or "date"
   const [sortOrder, setSortOrder] = useState("asc");
+  
+const [page, setPage] = useState(1);
 
   const navigate = useNavigate();
 
@@ -30,7 +34,9 @@ const EmployeesList = () => {
 
   const handleDelete = async (id) => {
     try {
-      await API.delete(`/admin/employees/${id}`);
+      await API.delete(`/employee/deleteEmployee/${id}`,{
+         headers: { Authorization: `Bearer ${token}` }
+      });
       setEmployees(employees.filter((emp) => emp._id !== id));
     } catch (err) {
       alert("Error deleting employee");
@@ -105,12 +111,18 @@ const EmployeesList = () => {
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
-          <div className="overflow-x-auto rounded-lg overflow-hidden">
+          <>
+          <div className="overflow-x-auto rounded-lg hidden md:flex flex-col overflow-hidden">
             <table className="min-w-full rounded-lg overflow-hidden ">
               <thead className="border border-2  border-purple-700  text-white text-sm sm:text-base">
                 <tr>
                   <th className="px-2 py-2" onClick={() => toggleSort("name")}><div className=" px-2 border rounded-sm py-2 bg-purple-700 w-full">  Full Name {sortKey === "name" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</div></th>
-                  <th className="px-2 py-2"><div className=" px-2 border rounded-sm py-2 bg-purple-700 w-full">Email</div></th>
+                  <th className="px-2 py-2">
+                    <div className=" px-2 border rounded-sm py-2 bg-purple-700 w-full">Email</div>
+                    </th>
+                  <th className="px-2 py-2">
+                    <div className=" px-2 border rounded-sm py-2 bg-purple-700 w-full">Phone</div>
+                    </th>
                   <th className="px-2 py-2"  onClick={() => toggleSort("date")}><div className=" px-2 border rounded-sm py-2 bg-purple-700 w-full"> Date of Joining {sortKey === "date" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</div></th>
                  
                    <th className="px-2 py-2"><div className=" px-2 border rounded-sm py-2 bg-purple-700 w-full">Action</div></th>
@@ -125,21 +137,22 @@ const EmployeesList = () => {
                   >
                     <td className="p-2 ">{emp.name}</td>
                     <td className="p-2 ">{emp.email}</td>
+                    <td className="p-2 ">{emp.phone}</td>
                     <td className="p-2 ">
                       {emp.dateOfJoining
                         ? new Date(emp.dateOfJoining).toLocaleDateString()
                         : "Not Specified"}
                     </td>
-                    <td className="p-2  space-x-2">
+                    <td className="p-2 space-x-6 ">
                       <Link
                         to={`/admin/edit/${emp._id}`}
-                        className="border border-2 border-purple-500 text-purple-700 px-2 py-1 rounded hover:bg-purple-600"
+                        className="border border-2 m-2 border-purple-500 text-purple-700 px-2 py-1 rounded hover:bg-purple-600"
                       >
                         Edit
                       </Link>
                       <button
                         onClick={() => handleDelete(emp._id)}
-                        className="border border-2 border-red-500 text-red-500 px-2 py-1 rounded hover:bg-red-600"
+                        className="border m-2 border-2 border-red-500 text-red-500 px-2 py-1 rounded hover:bg-red-600"
                       >
                         Delete
                       </button>
@@ -148,7 +161,75 @@ const EmployeesList = () => {
                 ))}
               </tbody>
             </table>
+           <div className="mt-4">
+        <button onClick={() => setPage(page - 1)} disabled={page === 1} className="btn px-4 py-2 border border-2 border-purple-700 rounded mr-2 text-purple-700 cursor-pointer">Prev</button>
+        <button onClick={() => setPage(page + 1)} className="btn px-4 py-2 border border-2 border-purple-700 rounded text-purple-700 cursor-pointer">Next</button>
+      </div>
           </div>
+          <div className="overflow-x-auto md:hidden rounded-lg border border-purple-700">
+      <table className="min-w-full text-sm text-center sm:text-base">
+        <thead className="bg-purple-700 text-white">
+          <tr>
+            <th className="px-4 py-2 cursor-pointer items-center" onClick={() => toggleSort("name")}>
+              Full Name
+            </th>
+            <th className="px-4 py-2">Email</th>
+            <th className="px-4 py-2">Phone</th>
+            <th className="px-4 py-2 cursor-pointer" onClick={() => toggleSort("date")}>
+              Date of Joining {sortKey === "date" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+            </th>
+            <th className="px-4 py-2">Action</th>
+          </tr>
+        </thead>
+        <tbody className="font-semibold">
+          {filteredEmployees.map((emp) => (
+            <tr
+              key={emp._id}
+              className="border-t border-purple-300 hover:bg-gray-100"
+            >
+              <td className="px-4 py-2">{emp.name}</td>
+              <td className="px-4 py-2">{emp.email}</td>
+              <td className="px-4 py-2">{emp.phone}</td>
+              <td className="px-4 py-2">
+                {emp.dateOfJoining
+                  ? new Date(emp.dateOfJoining).toLocaleDateString()
+                  : "Not Specified"}
+              </td>
+              <td className="px-4 py-2 space-x-2">
+                <Link
+                  to={`/admin/edit/${emp._id}`}
+                  className="border m-2 border-purple-500 text-purple-700 px-2 py-1 rounded hover:bg-purple-600 hover:text-white"
+                >
+                  Edit
+                </Link>
+                <button
+                  onClick={() => handleDelete(emp._id)}
+                  className="border m-2 border-red-500 text-red-500 px-2 py-1 rounded hover:bg-red-600 hover:text-white"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="mt-4 flex justify-center gap-4">
+        <button
+          onClick={() => setPage(page - 1)}
+          disabled={page === 1}
+          className="px-4 py-2 border border-purple-700 rounded text-purple-700 disabled:opacity-50"
+        >
+          Prev
+        </button>
+        <button
+          onClick={() => setPage(page + 1)}
+          className="px-4 py-2 border border-purple-700 rounded text-purple-700"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+          </>
         )}
       </div>
     </SidebarLayout>

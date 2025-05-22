@@ -7,9 +7,11 @@ import {
   Users,
   UserPlus,
   LayoutDashboard,
-  UserCircle
+  UserCircle,
+  UsersIcon
 } from "lucide-react"; // icons
 import { useAuth } from "../context/AuthContext";
+import Navbar from "./navbar";
 
 const SidebarLayout = ({ children }) => {
   const { logout } = useAuth();
@@ -27,12 +29,13 @@ const SidebarLayout = ({ children }) => {
     { to: "/admin", label: "Dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
     { to: "/admin/employees", label: "Employees", icon: <Users className="w-5 h-5" /> },
     { to: "/admin/add", label: "Add Employee", icon: <UserPlus className="w-5 h-5" /> },
-    { to: "/profile", label: "My Profile", icon: <UserCircle className="w-5 h-5" /> }
+    { to: "/admin/adminprofile", label: "Admin Profile", icon: <UserCircle className="w-5 h-5" /> },
   ];
 
   return (
     <>
-      <div className="min-h-screen flex flex-col md:flex-row">
+      <Navbar/>
+      <div className="min-h-screen flex flex-col md:flex-row pt-0 md:pt-16">
         {/* Sidebar */}
         <aside
           className={`${
@@ -45,11 +48,6 @@ const SidebarLayout = ({ children }) => {
               <X className="w-6 h-6 cursor-pointer" />
             </button>
           </div>
-
-          {/* Sidebar Title */}
-          <h2 className="text-2xl font-bold mb-4 flex items-center space-x-2">
-            <span>Admin</span>
-          </h2>
 
           {/* Sidebar Links */}
           <nav className="space-y-2">
@@ -68,15 +66,7 @@ const SidebarLayout = ({ children }) => {
               </Link>
             ))}
           </nav>
-
-          {/* Logout */}
-          <button
-            onClick={handleLogout}
-            className="flex items-center space-x-2 mt-6 text-sm hover:text-red-300"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Logout</span>
-          </button>
+  
         </aside>
 
         {/* Main content */}
