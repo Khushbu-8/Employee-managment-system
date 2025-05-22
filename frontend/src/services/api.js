@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 const API = axios.create({
-  //  baseURL: 'https://employee-managment-system-nu-dun.vercel.app',
-   baseURL: 'http://localhost:4000',
+   baseURL: 'https://employee-managment-system-nu-dun.vercel.app',
+  //  baseURL: 'http://localhost:4000',
     withCredentials: true,
 });
 
