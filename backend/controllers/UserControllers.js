@@ -75,6 +75,12 @@ const login = async (req, res) => {
       expiresIn: "1d",
     });
 
+    res.cookie("refreshToken", token, {
+      httpOnly: true,
+      sameSite: "None",
+      secure: true,
+      maxAge: 3 * 60 * 60 * 1000, // 3 hours in milliseconds
+    });
     return res.status(201).send({
       status: true,
       message: "Login successful",

@@ -27,7 +27,7 @@ const viewEmployee = async (req, res) => {
       viewEmp,
     });
   } catch (error) {
-    return res.status(400).send({ message: err.message });
+    return res.status(400).send({ message: error.message });
   }
 };
 
@@ -42,7 +42,7 @@ const deleteEmployee = async (req, res) => {
       status: true,
       massage: "Employee Delete Successfully",
     });
-  } catch (error) {
+  } catch (err) {
     return res.status(400).send({ message: err.message });
   }
 };
